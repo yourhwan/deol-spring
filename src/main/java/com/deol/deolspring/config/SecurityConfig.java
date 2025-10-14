@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/signup/success").permitAll()
                         .requestMatchers("/api/check-id").permitAll()
                         .requestMatchers("/api/email/check-email").permitAll()
+                        .requestMatchers("/api/email/verify").permitAll()
                         .requestMatchers("/api/find-id").permitAll()
                         .requestMatchers("/api/find-id/result").permitAll()
                         .requestMatchers("/api/find-password").permitAll()
@@ -70,10 +71,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/artists").permitAll()
                         .requestMatchers("/api/artists/**").permitAll()
                         .requestMatchers("/api/tracks/**").permitAll()
-                        .requestMatchers("/api/playlists/***").permitAll()
-                        .requestMatchers("/api/chart/**").permitAll()
+                        .requestMatchers("/api/playlists/****").permitAll()
+                        .requestMatchers("/api/chart/***").permitAll()
                         .requestMatchers("/api/mypage/**").permitAll()
                         .requestMatchers("/api/search").permitAll()
+                        .requestMatchers("/api/follow/add").permitAll()
+                        .requestMatchers("/api/follow/remove").permitAll()
+                        .requestMatchers("/api/follow/is_following").permitAll()
+                        .requestMatchers("/api/follow/list").permitAll()
+                        .requestMatchers("/api/follow/list/details").permitAll()
+                        .requestMatchers("/api/follow/count").permitAll()
                         .requestMatchers(
                                 "/api/chart/**",           // 차트 API 공개
                                 "/api/tracks/*/play"       // 재생 로그 공개
