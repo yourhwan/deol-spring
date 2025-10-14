@@ -70,8 +70,8 @@ aws-credentials
 # ---------------------------
 # Sample configs (추적 허용)
 # ---------------------------
-!src/main/resources/application.properties.example
-!src/main/resources/application-aws.properties.example
+#!src/main/resources/application.properties.example
+#!src/main/resources/application-aws.properties.example
 #!.env.example
 
 # ---------------------------
