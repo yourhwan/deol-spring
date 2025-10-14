@@ -23,7 +23,7 @@ public class Post {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User author;
+    private Member author;
 
     public Post(String title, String content) {
         this.title = title;
@@ -35,7 +35,7 @@ public class Post {
         this.imageUrl = imageUrl;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(Member author) {
         this.author = author;
     }
 }

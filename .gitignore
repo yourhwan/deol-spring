@@ -1,16 +1,26 @@
+# ---------------------------
+# Build / Gradle
+# ---------------------------
 HELP.md
-.gradle
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# 로그/산출물
+*.log
+*.jar
+
+# ---------------------------
+# IDE / Tooling
+# ---------------------------
 ### STS ###
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
 .sts4-cache
 bin/
@@ -18,9 +28,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-application-aws.properties
-
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -37,3 +45,37 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# ---------------------------
+# Secrets / Env (무시)
+# ---------------------------
+# Spring 설정 실제 파일(민감값 포함 가능)
+src/main/resources/application.properties
+src/main/resources/application-aws.properties
+
+# 환경변수 파일
+#.env
+#.env.*
+
+# 키/인증서
+*.pem
+*.p12
+*.jks
+*.keystore
+*.crt
+*.key
+serviceAccount*.json
+aws-credentials
+
+# ---------------------------
+# Sample configs (추적 허용)
+# ---------------------------
+!src/main/resources/application.properties.example
+!src/main/resources/application-aws.properties.example
+#!.env.example
+
+# ---------------------------
+# OS 잡파일
+# ---------------------------
+.DS_Store
+Thumbs.db

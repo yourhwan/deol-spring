@@ -2,7 +2,6 @@ package com.deol.deolspring.service;
 
 import com.deol.deolspring.entity.Post;
 import com.deol.deolspring.repository.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,15 +25,18 @@ public class PostService {
     }
 
     public Post getPostById(Long id) {
-        return postRepository.findById(id).orElseThrow();
+        return postRepository.findById(id).orElseThrow(() -> new RuntimeException("Post not found"));
     }
 
     @Transactional
     public Post createPost(Post post, MultipartFile file) throws IOException {
-        String key = s3Service.generateFileKey(file); // S3Service에서 키 생성
-        s3Service.upload(file, key); // S3Service를 통한 파일 업로드
-        post.setImageUrl(s3Service.getFileUrl(key)); // 파일 URL 설정
-        return postRepository.save(post);
+        // 파일이 존재할 경우 S3에 업로드
+        if (file != null && !file.isEmpty()) {
+            String key = s3Service.generateFileKey(file); // S3에서 사용할 파일 키 생성
+            String fileUrl = s3Service.upload(file); // S3에 파일 업로드 후 URL 반환
+            post.setImageUrl(fileUrl); // 게시물의 이미지 URL 설정
+        }
+        return postRepository.save(post); // 게시물 저장
     }
 
     @Transactional
@@ -44,12 +46,12 @@ public class PostService {
         post.setContent(postDetails.getContent());
 
         if (file != null && !file.isEmpty()) {
-            String key = s3Service.generateFileKey(file); // S3Service에서 키 생성
-            s3Service.upload(file, key); // S3Service를 통한 파일 업로드
-            post.setImageUrl(s3Service.getFileUrl(key)); // 파일 URL 설정
+            String key = s3Service.generateFileKey(file); // S3에서 사용할 파일 키 생성
+            String fileUrl = s3Service.upload(file); // S3에 파일 업로드 후 URL 반환
+            post.setImageUrl(fileUrl); // 게시물의 이미지 URL 설정
         }
 
-        return postRepository.save(post);
+        return postRepository.save(post); // 업데이트된 게시물 저장
     }
 
     @Transactional
@@ -57,8 +59,8 @@ public class PostService {
         Post post = getPostById(id);
         if (post.getImageUrl() != null) {
             String key = s3Service.extractKeyFromUrl(post.getImageUrl()); // URL에서 키 추출
-            s3Service.delete(key); // S3 파일 삭제
+            s3Service.delete(key); // S3에서 파일 삭제
         }
-        postRepository.deleteById(id);
+        postRepository.deleteById(id); // 게시물 삭제
     }
 }
