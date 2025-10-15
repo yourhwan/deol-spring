@@ -32,6 +32,9 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final TokenProvider tokenProvider;
 
+    // ✅ 추가: JwtFilter를 빈으로 주입받습니다.
+    private final JwtFilter jwtFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -49,6 +52,7 @@ public class SecurityConfig {
 
                 // 세션 사용하지 않음(JWT 사용하므로 STATELESS 설정)
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/signup/home").permitAll()
                         .requestMatchers("/api/signup/regular").permitAll()
                         .requestMatchers("/api/signup/artist").permitAll()
@@ -112,8 +116,8 @@ public class SecurityConfig {
                 // 폼 로그인 비활성화 (JWT 인증 방식 사용)
                 .formLogin(AbstractHttpConfigurer::disable)
 
-                // JWT 필터 추가
-                .addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
+                // ✅ 변경: JwtFilter를 new로 생성하지 말고, 주입받은 빈을 사용합니다.
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
