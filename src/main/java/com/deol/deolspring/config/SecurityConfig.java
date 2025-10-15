@@ -67,6 +67,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/albums/upload").permitAll()
                         .requestMatchers("/upload/album").permitAll()
                         .requestMatchers("/api/mainhome/*").permitAll()
+                        .requestMatchers("/api/mainhome").permitAll()
                         .requestMatchers("/api/authenticate").permitAll()
                         .requestMatchers("/api/artists").permitAll()
                         .requestMatchers("/api/artists/**").permitAll()
