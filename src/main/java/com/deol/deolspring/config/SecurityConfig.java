@@ -66,16 +66,18 @@ public class SecurityConfig {
                         .requestMatchers("/api/albums/**").permitAll()
                         .requestMatchers("/api/albums/upload").permitAll()
                         .requestMatchers("/upload/album").permitAll()
-                        .requestMatchers("/api/mainhome/*").permitAll()
+                        .requestMatchers("/api/mainhome/**").permitAll()
                         .requestMatchers("/api/mainhome").permitAll()
                         .requestMatchers("/api/authenticate").permitAll()
                         .requestMatchers("/api/artists").permitAll()
                         .requestMatchers("/api/artists/**").permitAll()
                         .requestMatchers("/api/tracks/**").permitAll()
                         .requestMatchers("/api/playlists/**").permitAll()
-                        .requestMatchers("/api/chart/**").permitAll()
+                        .requestMatchers("/api/chart").permitAll()
                         .requestMatchers("/api/mypage/**").permitAll()
                         .requestMatchers("/api/search").permitAll()
+                        .requestMatchers("/api/follow").permitAll()
+                        .requestMatchers("/api/follow/**").permitAll()
                         .requestMatchers("/api/follow/add").permitAll()
                         .requestMatchers("/api/follow/remove").permitAll()
                         .requestMatchers("/api/follow/is_following").permitAll()
@@ -95,6 +97,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/swagger-config/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources",
+                                "/swagger-resources/*",
                                 "/swagger-resources/**",
                                 "/configuration/ui",
                                 "/configuration/security",
