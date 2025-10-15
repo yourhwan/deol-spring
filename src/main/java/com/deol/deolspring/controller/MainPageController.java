@@ -6,6 +6,7 @@ import com.deol.deolspring.service.AlbumService;
 import com.deol.deolspring.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @Tag(name = "MainPage API", description = "메인페이지 관련 API")
+@PermitAll
 public class MainPageController {
 
     private final MemberService memberService;
