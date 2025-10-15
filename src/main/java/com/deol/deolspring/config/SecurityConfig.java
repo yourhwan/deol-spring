@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/chart").permitAll()
                         .requestMatchers("/api/mypage/**").permitAll()
                         .requestMatchers("/api/search").permitAll()
+                        .requestMatchers("/api/search/**").permitAll()
                         .requestMatchers("/api/follow").permitAll()
                         .requestMatchers("/api/follow/**").permitAll()
                         .requestMatchers("/api/follow/add").permitAll()
@@ -88,6 +89,8 @@ public class SecurityConfig {
                                 "/api/chart/**",           // 차트 API 공개
                                 "/api/tracks/*/play"       // 재생 로그 공개
                         ).permitAll()
+                        // 정적/프론트 접근 허용(필요시)
+                        .requestMatchers("/", "/index.html", "/static/**", "/assets/**").permitAll()
 
                         .requestMatchers("/api/user/*").hasAnyRole("ADMIN")
                         .requestMatchers("/api/user").hasAnyRole("ADMIN")
