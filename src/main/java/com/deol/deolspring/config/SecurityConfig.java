@@ -96,7 +96,7 @@ public class SecurityConfig {
                         ).permitAll()
                         // 정적/프론트 접근 허용(필요시)
                         .requestMatchers("/", "/index.html", "/static/**", "/assets/**").permitAll()
-
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/user/*").hasAnyRole("ADMIN")
                         .requestMatchers("/api/user").hasAnyRole("ADMIN")
                         .requestMatchers(
