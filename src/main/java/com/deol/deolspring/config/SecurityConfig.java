@@ -101,7 +101,6 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/swagger-ui/**").permitAll() // 스웨거 관련
 
-
                         .anyRequest().authenticated()) // 나머지 요청은 인증 필요
 
                 // 폼 로그인 비활성화 (JWT 인증 방식 사용)
