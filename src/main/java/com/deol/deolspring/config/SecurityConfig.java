@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -139,5 +140,12 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    // 테스트용이기 때문에 임시로 사용 후 제거하기(무조건 200 받아줌)
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        // ✅ 이메일 API와 헬스체크는 보안필터(=JwtFilter 포함) 완전 우회
+        return web -> web.ignoring().requestMatchers("/api/email/**", "/actuator/health");
     }
 }
