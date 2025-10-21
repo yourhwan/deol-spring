@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000") // React 앱의 주소에 맞춰 수정
 @RequiredArgsConstructor
 @Tag(name = "Search", description = "통합 검색 API")
 public class SearchController {

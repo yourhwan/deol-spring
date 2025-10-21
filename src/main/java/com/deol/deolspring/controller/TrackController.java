@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/tracks")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 @Tag(name = "Track API", description = "트랙 관련 API")
 @PermitAll
 public class TrackController {

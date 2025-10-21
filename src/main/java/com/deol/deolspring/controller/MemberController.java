@@ -22,7 +22,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 @Tag(name = "회원 관련 API", description = "회원 가입, 로그인, 팔로잉 및 마이페이지 API")
 public class MemberController {
 
