@@ -7,8 +7,10 @@ import com.deol.deolspring.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -32,91 +35,79 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final TokenProvider tokenProvider;
 
-    // ✅ 추가: JwtFilter를 빈으로 주입받습니다.
+    // 주입받은 JwtFilter 사용
     private final JwtFilter jwtFilter;
+
+    /**
+     * ✅ 공개 엔드포인트는 보안 필터 체인(= JwtFilter 포함) "밖"으로 빼서 401을 방지한다.
+     *   - 여기 나열된 경로는 JwtFilter 자체를 타지 않음.
+     */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(
+                // 공개 조회 API
+                "/api/albums/**",
+                "/api/tracks/**",
+                "/api/chart/**",
+                "/api/mainhome/**",
+                "/api/search/**",
+
+                // 가입/인증 등 공개 엔드포인트
+                "/api/signup/**",
+                "/api/check-id",
+                "/api/email/**",
+                "/api/find-id/**",
+                "/api/find-password",
+                "/api/change-password",
+                "/api/login",
+                "/upload/album",
+
+                // 정적/문서/오류
+                "/",
+                "/index.html",
+                "/static/**",
+                "/assets/**",
+                "/error",
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/api-docs/**"
+        );
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(withDefaults()) // ✅ CORS 설정 활성화
+                .cors(withDefaults())
 
-                // Exception handling 설정
-                .exceptionHandling(exception -> exception
+                // 예외 처리
+                .exceptionHandling(ex -> ex
                         .accessDeniedHandler(jwtAccessDeniedHandler)
-                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
 
-                // 세션 사용하지 않음(JWT 사용하므로 STATELESS 설정)
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // 세션 미사용 (JWT)
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 세션 사용하지 않음(JWT 사용하므로 STATELESS 설정)
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/signup/home").permitAll()
-                        .requestMatchers("/api/signup/regular").permitAll()
-                        .requestMatchers("/api/signup/artist").permitAll()
-                        .requestMatchers("/api/signup/success").permitAll()
-                        .requestMatchers("/api/check-id").permitAll()
-                        .requestMatchers("/api/email/check-email").permitAll()
-                        .requestMatchers("/api/email/verify").permitAll()
-                        .requestMatchers("/api/find-id").permitAll()
-                        .requestMatchers("/api/find-id/result").permitAll()
-                        .requestMatchers("/api/find-password").permitAll()
-                        .requestMatchers("/api/change-password").permitAll()
-                        .requestMatchers("/api/email/verify").permitAll()
-                        .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/api/albums").permitAll()
-                        .requestMatchers("/api/albums/**").permitAll()
-                        .requestMatchers("/api/albums/upload").permitAll()
-                        .requestMatchers("/upload/album").permitAll()
-                        .requestMatchers("/api/mainhome/**").permitAll()
-                        .requestMatchers("/api/mainhome").permitAll()
-                        .requestMatchers("/api/authenticate").permitAll()
-                        .requestMatchers("/api/artists").permitAll()
-                        .requestMatchers("/api/artists/**").permitAll()
-                        .requestMatchers("/api/tracks/**").permitAll()
+                // 인가 규칙 (여기엔 "필터 체인 안"으로 두는 경로만 남음)
+                .authorizeHttpRequests(auth -> auth
+                        // 프리플라이트는 항상 허용
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // (필요시 추가 permitAll/권한 규칙—아래 예시는 네 기존 규칙 유지)
                         .requestMatchers("/api/playlists/**").permitAll()
-                        .requestMatchers("/api/chart").permitAll()
                         .requestMatchers("/api/mypage/**").permitAll()
-                        .requestMatchers("/api/search").permitAll()
-                        .requestMatchers("/api/search/**").permitAll()
-                        .requestMatchers("/api/follow").permitAll()
                         .requestMatchers("/api/follow/**").permitAll()
-                        .requestMatchers("/api/follow/add").permitAll()
-                        .requestMatchers("/api/follow/remove").permitAll()
-                        .requestMatchers("/api/follow/is_following").permitAll()
-                        .requestMatchers("/api/follow/list").permitAll()
-                        .requestMatchers("/api/follow/list/details").permitAll()
-                        .requestMatchers("/api/follow/count").permitAll()
-                        .requestMatchers(
-                                "/api/chart/**",           // 차트 API 공개
-                                "/api/tracks/*/play"       // 재생 로그 공개
-                        ).permitAll()
-                        // 정적/프론트 접근 허용(필요시)
-                        .requestMatchers("/", "/index.html", "/static/**", "/assets/**").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/user/*").hasAnyRole("ADMIN")
-                        .requestMatchers("/api/user").hasAnyRole("ADMIN")
-                        .requestMatchers(
-                                "/api-docs/**",
-                                "/v3/api-docs/**",
-                                "/v3/api-docs/swagger-config/**",
-                                "/swagger-ui.html",
-                                "/swagger-resources",
-                                "/swagger-resources/*",
-                                "/swagger-resources/**",
-                                "/configuration/ui",
-                                "/configuration/security",
-                                "/webjars/**",
-                                "/swagger-ui/**").permitAll() // 스웨거 관련
+                        .requestMatchers("/api/user", "/api/user/*").hasAnyRole("ADMIN")
 
-                        .anyRequest().authenticated()) // 나머지 요청은 인증 필요
+                        // 그 외는 인증 필요
+                        .anyRequest().authenticated()
+                )
 
-                // 폼 로그인 비활성화 (JWT 인증 방식 사용)
+                // 폼 로그인 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
 
-                // ✅ 변경: JwtFilter를 new로 생성하지 말고, 주입받은 빈을 사용합니다.
+                // JwtFilter를 UsernamePasswordAuthenticationFilter 앞에 삽입
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -127,24 +118,23 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    /**
+     * CORS: 개발/배포 동시 허용(배포는 동일 오리진이라 실제로는 CORS가 거의 안 걸림)
+     * 프로덕션에선 @Profile로 분리하는 걸 권장.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 프론트 주소
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 메서드
-        configuration.setAllowedHeaders(Arrays.asList("*")); // 모든 헤더 허용
-        configuration.setAllowCredentials(true); // 인증 정보 허용 (Authorization 헤더 포함 허용)
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "https://deolstreaming.com"
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-    // 테스트용이기 때문에 임시로 사용 후 제거하기(무조건 200 받아줌)
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        // ✅ 이메일 API와 헬스체크는 보안필터(=JwtFilter 포함) 완전 우회
-//        return web -> web.ignoring().requestMatchers("/api/email/**", "/actuator/health");
-//    }
 }
