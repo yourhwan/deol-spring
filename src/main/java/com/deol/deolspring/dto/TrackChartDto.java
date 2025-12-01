@@ -15,4 +15,5 @@ public class TrackChartDto {
     private String  coverImage;   // 앨범 커버
     private Long    playCount24h; // 24시간 재생수
     private Integer rank;         // 1..100
+    private String  trackDuration; // 예: "3:45" (아래 서비스에서 mm:ss로 통일)
 }

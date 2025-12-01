@@ -41,6 +41,25 @@ public class ChartService {
         trackPlayRepository.save(log);
     }
 
+    /** "초" 또는 "m:ss" 문자열을 화면 표시용 "m:ss"로 정규화 */
+    private String normalizeDuration(String raw) {
+        if (raw == null || raw.isBlank()) return null;
+        // 이미 "m:ss" 같은 포맷이면 그대로 사용
+        if (raw.contains(":")) return raw;
+
+        // 숫자 문자열(초) → m:ss
+        try {
+            int sec = Integer.parseInt(raw.trim());
+            if (sec < 0) sec = 0;
+            int m = sec / 60;
+            int s = sec % 60;
+            return m + ":" + String.format("%02d", s);
+        } catch (NumberFormatException e) {
+            // 다른 포맷이면 원문 유지
+            return raw;
+        }
+    }
+
     /** 실시간 Top N (최근 24시간) */
     public List<TrackChartDto> getRealtimeTopN(int limit) {
         LocalDateTime since = LocalDateTime.now().minusHours(24);
@@ -98,6 +117,9 @@ public class ChartService {
                     Integer artistId   = (t != null) ? t.getTrackArtistId() : null;
                     String  artistName = (artistId != null) ? artistNameMap.get(artistId) : null;
 
+                    // ★ 추가: 재생시간
+                    String duration = (t != null) ? normalizeDuration(t.getTrackDuration()) : null;
+
                     return new TrackChartDto(
                             trackId,
                             t != null ? t.getTrackTitle() : null,
@@ -107,7 +129,8 @@ public class ChartService {
                             a != null ? a.getAlbumTitle() : null,
                             a != null ? a.getCoverImage() : null,
                             cnt,
-                            i + 1
+                            i + 1,
+                            duration // ★ 추가
                     );
                 })
                 .collect(Collectors.toList());
@@ -175,6 +198,9 @@ public class ChartService {
                     Integer artistId   = (t != null) ? t.getTrackArtistId() : null;
                     String  artistName = (artistId != null) ? artistNameMap.get(artistId) : null;
 
+                    // ★ 추가: 재생시간
+                    String duration = (t != null) ? normalizeDuration(t.getTrackDuration()) : null;
+
                     return new TrackChartDto(
                             trackId,
                             t != null ? t.getTrackTitle() : null,
@@ -184,7 +210,8 @@ public class ChartService {
                             a != null ? a.getAlbumTitle() : null,
                             a != null ? a.getCoverImage() : null,
                             cnt,
-                            i + 1
+                            i + 1,
+                            duration // ★ 추가
                     );
                 })
                 .collect(Collectors.toList());
