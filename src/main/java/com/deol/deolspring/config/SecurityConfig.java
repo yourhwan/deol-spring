@@ -51,6 +51,7 @@ public class SecurityConfig {
                 "/api/chart/**",
                 "/api/mainhome/**",
                 "/api/search/**",
+                "/api/artists/**",
 
                 // 가입/인증 등 공개 엔드포인트
                 "/api/signup/**",
@@ -60,7 +61,6 @@ public class SecurityConfig {
                 "/api/find-password",
                 "/api/change-password",
                 "/api/login",
-                "/upload/album",
 
                 // 정적/문서/오류
                 "/",
@@ -99,6 +99,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/mypage/**").permitAll()
                         .requestMatchers("/api/follow/**").permitAll()
                         .requestMatchers("/api/user", "/api/user/*").hasAnyRole("ADMIN")
+                        .requestMatchers("/upload/album").hasRole("ARTIST")
 
                         // 그 외는 인증 필요
                         .anyRequest().authenticated()
