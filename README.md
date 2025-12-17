@@ -4,6 +4,11 @@ Deol은 음원 스트리밍과 아티스트 음원 업로드를 중심으로 만
 사용자는 트랙 재생/플레이리스트 관리/실시간 차트를 이용할 수 있고, 아티스트는 앨범 단위로 음원을 업로드할 수 있습니다.
 
 
+## My Role
+- 기획부터 개발/배포까지 전 과정을 1인으로 진행했습니다.
+- Frontend(React) / Backend(Spring Boot) / AWS 배포까지 구현했습니다.
+
+
 ## Tech Stack
 - Frontend: React, React Router, Axios, CSS
 - Backend: Spring Boot (Java 17), Spring Security (JWT), JPA (Hibernate)
